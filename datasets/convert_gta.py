@@ -354,14 +354,15 @@ def _convert_dataset_one_pair_rec(dataset_dir, split_name, save_sub_dir, tmp_dir
 if __name__ == '__main__':
     seg_class_type='8catId'
     # seg_class_type='20trainId'
-    # split_name = 'train'
-    # split_name = 'trainOnlyLabeled'
-    split_name = 'test'
-    dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/gta25k/'
+
+    dataset_dir = int(sys.argv[1])
+    IsTrain = int(sys.argv[2])
+
+    if IsTrain:
+        split_name = 'train'
+    else:
+        split_name = 'test'
     save_sub_dir = 'gta25k_city_{}_{}x{}_{}'.format(split_name, _IMG_HEIGHT, _IMG_WEIGHT, seg_class_type)
-    # sub_dir_name = '' ## '' or '_day' or '_night' 
-    # dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/gta25k_bdd%s/'%sub_dir_name
-    # save_sub_dir = 'gta25k_bdd{}_{}_{}x{}_{}'.format(sub_dir_name , split_name, _IMG_HEIGHT, _IMG_WEIGHT, seg_class_type)
 
     if not os.path.exists(os.path.join(dataset_dir,save_sub_dir)):
         os.makedirs(os.path.join(dataset_dir,save_sub_dir))

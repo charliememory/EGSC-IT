@@ -236,6 +236,7 @@ def str2bool(v):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--data_dir", default="../data/gta", type=str, help="data_dir")
     parser.add_argument("--dataset", default="gta", type=str, help="dataset name")
     parser.add_argument('--use_8catId', type=str2bool, default=False, help='use 8catId or 20trainId')
     parser.add_argument('--file_regex', type=str, default="*.png", help='use 8catId or 20trainId')
@@ -269,8 +270,7 @@ if __name__ == "__main__":
         raise Exception('args["dataset"] is not a suitable dataset name')
 
     # pdb.set_trace() 
-    preprocess_master("./{}/trainB_seg".format(args["dataset"]), preprocess_func, args["file_regex"])
-    preprocess_master("./{}/testB_seg".format(args["dataset"]), preprocess_func, args["file_regex"])
-    # pdb.set_trace()
-    # preprocess_master("./{}/testA_seg".format(args["dataset"]), preprocess_func, args["file_regex"])
-    # preprocess_master("./{}/testB_seg".format(args["dataset"]), preprocess_func, args["file_regex"])
+    preprocess_master("{}/trainB_seg".format(args["data_dir"]), preprocess_func, args["file_regex"])
+    preprocess_master("{}/testB_seg".format(args["data_dir"]), preprocess_func, args["file_regex"])
+    preprocess_master("{}/trainA_seg".format(args["data_dir"]), preprocess_func, args["file_regex"])
+    preprocess_master("{}/testA_seg".format(args["data_dir"]), preprocess_func, args["file_regex"])

@@ -39,9 +39,6 @@ _NUM_SHARDS = 1
 
 _IMG_PATTERN_list = ['*.png','*.jpg']
 
-# _IMG_HEIGHT = 176
-# _IMG_WEIGHT = 216
-
 _IMG_HEIGHT = 128
 _IMG_WEIGHT = 128
 
@@ -223,25 +220,13 @@ def _convert_dataset_one_pair_rec(dataset_dir, split_name, save_sub_dir, tmp_dir
 
 
 if __name__ == '__main__':
-    # split_name = 'train'
-    # dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/celebaMaleFemale_crop_resize/'
-    # save_sub_dir = 'celebaMaleFemale_{}_{}x{}'.format(split_name, _IMG_HEIGHT, _IMG_WEIGHT)
+    dataset_dir = int(sys.argv[1])
+    IsTrain = int(sys.argv[2])
 
-    # if not os.path.exists(os.path.join(dataset_dir,save_sub_dir)):
-    #     os.makedirs(os.path.join(dataset_dir,save_sub_dir))
-
-    # tmp_dir = os.path.join('/tmp', str(time.time()))
-    # if os.path.exists(tmp_dir):
-    #     shutil.rmtree(tmp_dir)
-    # os.makedirs(tmp_dir)
-
-    # _convert_dataset_one_pair_rec(dataset_dir, split_name, save_sub_dir, tmp_dir,
-    #                                 tf_record_pair_num=np.inf)
-
-
-
-    split_name = 'test'
-    dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/celebaMaleFemale_crop_resize/'
+    if IsTrain:
+        split_name = 'train'
+    else:
+        split_name = 'test'
     save_sub_dir = 'celebaMaleFemale_{}_{}x{}'.format(split_name, _IMG_HEIGHT, _IMG_WEIGHT)
 
     if not os.path.exists(os.path.join(dataset_dir,save_sub_dir)):

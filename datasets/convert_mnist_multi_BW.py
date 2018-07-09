@@ -1,14 +1,3 @@
-"""Downloads and converts Market1501 data to TFRecords of TF-Example protos.
-
-This module downloads the Market1501 data, uncompresses it, reads the files
-that make up the Market1501 data and creates two TFRecord datasets: one for train
-and one for test. Each TFRecord dataset is comprised of a set of TF-Example
-protocol buffers, each of which contain a single image and label.
-
-The script should take about a minute to run.
-
-"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -17,11 +6,6 @@ import math
 import os
 import random
 import sys
-
-import tensorflow as tf
-
-#from datasets import dataset_utils
-import dataset_utils
 import numpy as np
 import pickle
 import pdb
@@ -31,6 +15,9 @@ import scipy.misc
 import shutil
 import time
 
+import dataset_utils
+import tensorflow as tf
+
 # Seed for repeatability.
 random.seed(1)
 
@@ -39,8 +26,6 @@ _NUM_SHARDS = 1
 
 _IMG_PATTERN_list = ['*.png','*.jpg']
 
-# _IMG_HEIGHT = 28
-# _IMG_WEIGHT = 28
 _IMG_HEIGHT = 112
 _IMG_WEIGHT = 112
 
@@ -230,16 +215,14 @@ def _convert_dataset_one_pair_rec(dataset_dir, split_name, save_sub_dir, tmp_dir
 
 
 if __name__ == '__main__':
-    # split_name = 'train'
-    split_name = 'test'
-    # dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/mnist/'
-    # dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/mnist_multi_fixColor/'
-    # save_sub_dir = 'mnist_multi_fixColor_{}_{}x{}'.format(split_name, _IMG_HEIGHT, _IMG_WEIGHT)
-    dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/SG-GAN_data/mnist_multi_jitterColor_BW/'
+    dataset_dir = int(sys.argv[1])
+    IsTrain = int(sys.argv[2])
+
+    if IsTrain:
+        split_name = 'train'
+    else:
+        split_name = 'test'
     save_sub_dir = 'mnist_multi_jitterColor_BW_{}_{}x{}'.format(split_name, _IMG_HEIGHT, _IMG_WEIGHT)
-    # pair_mode = 'letter_letter' ## 'letter_mnist' | 'mnist_letter' | 'letter_letter'
-    # dataset_dir = '/esat/dragon/liqianma/datasets/Adaptation/emnist_BW/%s_multi_jitterColor_BW'%pair_mode
-    # save_sub_dir = 'emnist_multi_jitterColor_BW_{}_{}_{}x{}'.format(pair_mode, split_name, _IMG_HEIGHT, _IMG_WEIGHT)
 
     if not os.path.exists(os.path.join(dataset_dir,save_sub_dir)):
         os.makedirs(os.path.join(dataset_dir,save_sub_dir))

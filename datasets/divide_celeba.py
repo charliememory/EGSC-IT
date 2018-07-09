@@ -1,4 +1,4 @@
-import sys
+import sys, cv2
 import os
 import argparse
 from glob import glob
@@ -7,11 +7,10 @@ import shutil, pdb
 import numpy as np
 random.seed(0)
 
-data_dir = '/esat/dragon/liqianma/datasets/Adaptation/Celeba'
-# img_dir = os.path.join(data_dir, 'img_align_celeba')
+# data_dir = '/esat/dragon/liqianma/datasets/Adaptation/Celeba'
+data_dir = sys.argv[1]
 
-male_img_dir = os.path.join(data_dir, 'male_img_crop_resize')
-female_img_dir = os.path.join(data_dir, 'female_img_crop_resize')
+img_dir = os.path.join(data_dir, 'img_align_celeba')
 
 tr_male_dir = os.path.join(data_dir, 'tr_male_img')
 tr_female_dir = os.path.join(data_dir, 'tr_female_img')
@@ -51,7 +50,7 @@ with open(attr_txt_path, 'r') as f:
                 dst_path = os.path.join(val_male_dir, img_name[i])
             elif '2'==partion_dic[img_name[i]]:
                 dst_path = os.path.join(ts_male_dir, img_name[i])
-            shutil.copy2(os.path.join(male_img_dir, img_name[i]), dst_path)
+            shutil.copy2(os.path.join(img_dir, img_name[i]), dst_path)
         elif '-1'==gender[i]: ## Female
             if '0'==partion_dic[img_name[i]]:
                 dst_path = os.path.join(tr_female_dir, img_name[i])
@@ -59,4 +58,10 @@ with open(attr_txt_path, 'r') as f:
                 dst_path = os.path.join(val_female_dir, img_name[i])
             elif '2'==partion_dic[img_name[i]]:
                 dst_path = os.path.join(ts_female_dir, img_name[i])
-            shutil.copy2(os.path.join(female_img_dir, img_name[i]), dst_path)
+            shutil.copy2(os.path.join(img_dir, img_name[i]), dst_path)
+
+        ## Crop and resize
+        img=cv2.imread(dst_path)
+        crop_img=img[20:218-20,:,:]
+        resized_img=cv2.resize(crop_img,dsize=(132,132))
+        cv2.imwrite(dst_path,resized_img)

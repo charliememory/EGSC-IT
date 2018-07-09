@@ -1,4 +1,4 @@
-import mnist, os, pdb, tqdm
+import mnist, os, sys, pdb, tqdm
 import scipy.misc
 import numpy as np
 
@@ -7,12 +7,6 @@ train_labels = mnist.train_labels()
 test_images = mnist.test_images()
 test_labels = mnist.test_labels()
 
-## Save
-# pdb.set_trace()
-# scipy.misc.toimage(train_images[0,:,:] * -1 + 256).save('/tmp/minist.png')
-# scipy.misc.imsave(os.path.join(B_dir, '%06d_%d_R_G.png'%(i,label)), img_rgb.astype(np.uint8))
-
-IsTrain = False
 color_Black = [0,0,0]
 color_White = [255,255,255]
 color_R = [255,0,0]
@@ -20,7 +14,8 @@ color_G = [0,255,0]
 color_B = [0,0,255]
 np.random.seed(0)
 
-data_dir = '/esat/dragon/liqianma/datasets/Adaptation/mnist_BW'
+data_dir = int(sys.argv[1])
+IsTrain = int(sys.argv[2])
 if IsTrain:
     A_dir = os.path.join(data_dir, 'trainA')
     B_dir = os.path.join(data_dir, 'trainB')
