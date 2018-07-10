@@ -1,10 +1,10 @@
 # Exemplar Guided Unsupervised Image-to-Image
 Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised Image-to-Image](https://arxiv.org/abs/1805.11145)
 
-![alt text](imgs/teaser_GTA2BDD.svg)
+![alt text](https://gitlab.esat.kuleuven.be/Liqian.Ma/EG-UNIT/raw/master/imgs/teaser_GTA2BDD.svg)
 
 ## Network architecture
-![alt text](imgs/framework_EGUNIT_test.svg)
+![alt text](https://gitlab.esat.kuleuven.be/Liqian.Ma/EG-UNIT/raw/master/imgs/framework_EGUNIT_test.svg)
 ![alt text](imgs/info_flow_in_autoencoder.png)
 
 ## Dependencies
