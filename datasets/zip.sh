@@ -1,0 +1,5 @@
+cd /esat/diamond/liqianma/HomepageResources/NIPS18_EGUNIT/data
+zip -r celeba_tf.zip celeba/celebaMaleFemale_test_128x128 celeba/celebaMaleFemale_train_128x128
+zip -r gta_bdd_tf.zip gta_bdd/gta25k_bdd_test_512x1024_8catId gta_bdd/gta25k_bdd_train_512x1024_8catId
+zip -r gta_city_tf.zip gta_city/gta25k_city_test_512x1024_8catId gta_city/gta25k_city_train_512x1024_8catId
+zip -r mnist_tf.zip mnist/mnist_BW_test_28x28 mnist/mnist_BW_train_28x28 mnist/mnist_multi_jitterColor_BW_test_112x112 mnist/mnist_multi_jitterColor_BW_train_112x112
