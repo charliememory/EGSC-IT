@@ -1,7 +1,7 @@
 # Exemplar Guided Unsupervised Image-to-Image
 Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised Image-to-Image](https://arxiv.org/abs/1805.11145)
 
-![alt text](./imgs/teaser_GTA2BDD.svg)
+![alt text](https://gitlab.esat.kuleuven.be/Liqian.Ma/EG-UNIT/blob/master/imgs/teaser_GTA2BDD.svg)
 
 ## Dependencies
 - python 2.7
