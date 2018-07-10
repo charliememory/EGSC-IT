@@ -3,6 +3,10 @@ Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised 
 
 ![alt text](imgs/teaser_GTA2BDD.svg)
 
+## Network architecture
+![alt text](imgs/framework_EGUNIT_test.svg)
+![alt text](imgs/info_flow_in_autoencoder.png)
+
 ## Dependencies
 - python 2.7
 - tensorflow-gpu (1.4.1)
