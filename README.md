@@ -53,6 +53,7 @@ Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised 
 ```
 
 ## Related projects
+- [UNIT-Tensorflow](https://github.com/taki0112/UNIT-Tensorflow)
 - [SG-GAN](https://github.com/Peilun-Li/SG-GAN)
 - [Pose-Guided-Person-Image-Generation](https://github.com/charliememory/Pose-Guided-Person-Image-Generation)
 

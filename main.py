@@ -140,7 +140,6 @@ if __name__ == '__main__':
     trainer.init_net(args)
         
     if args.phase == 'train':
-        # trainer.train_xG1D(args)
         trainer.train(args)
     else:
         trainer.test(args)

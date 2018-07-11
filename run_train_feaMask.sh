@@ -71,6 +71,6 @@ python main.py --model_dir=${model_dir} --phase='train' \
                --lr=${lr}  --use_lsgan=True --norm=None \
                --epoch=1 --segment_class=${segment_class} \
                --L1_weight=100  --L1_cycle_weight=100 --n_dis=4  --ngf=64 --ndf=64 \
-               --n_encoder=${n_1}  --n_encoder=${n_1}   \
+               --n_encoder=${n_1}  --n_gen_decoder=${n_1}   \
                --img_h=${img_h}  --img_w=${img_w}  --img_h_original=${img_h_original}  --img_w_original=${img_w_original} \
                --G_update=${G_update}
