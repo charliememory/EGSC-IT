@@ -29,17 +29,6 @@ G_update=1
 # img_w_original=112
 # G_update=1
 
-# data_name='celebaMaleFemaleCropTrTs'
-# dataset_dir='celebaMaleFemale_train_128x128'
-# bs=8
-# lr=1e-4
-# n_1=3
-# img_h=128
-# img_w=128
-# img_h_original=128
-# img_w_original=128
-# G_update=1
-
 # data_name='gta25k8'
 # dataset_dir='gta25k_city_train_512x1024_8catId'
 # bs=3
@@ -60,6 +49,17 @@ G_update=1
 # img_w=512
 # img_h_original=512
 # img_w_original=1024
+# G_update=1
+
+# data_name='celebaMaleFemaleCropTrTs'
+# dataset_dir='celebaMaleFemale_train_128x128'
+# bs=8
+# lr=1e-4
+# n_1=3
+# img_h=128
+# img_w=128
+# img_h_original=128
+# img_w_original=128
 # G_update=1
 ###############################################################
 

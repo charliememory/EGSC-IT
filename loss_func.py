@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-from ops import *
 from utils import *
 
 

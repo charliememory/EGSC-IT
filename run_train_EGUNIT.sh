@@ -40,19 +40,6 @@ G_update=5
 # content_weight=1e2
 # G_update=5
 
-# data_name='celeba'
-# dataset_dir='celebaMaleFemale_train_128x128'
-# bs=8
-# lr=1e-4
-# n_1=3
-# img_h=128
-# img_w=128
-# img_h_original=128
-# img_w_original=128
-# style_weight=5e3
-# content_weight=1e1
-# G_update=5
-
 # data_name='gta25kcity'
 # dataset_dir='gta25k_city_train_512x1024_8catId'
 # bs=3
@@ -79,6 +66,18 @@ G_update=5
 # content_weight=1e2
 # G_update=5
 
+# data_name='celeba'
+# dataset_dir='celebaMaleFemale_train_128x128'
+# bs=8
+# lr=1e-4
+# n_1=3
+# img_h=128
+# img_w=128
+# img_h_original=128
+# img_w_original=128
+# style_weight=5e3
+# content_weight=1e1
+# G_update=5
 ###############################################################
 
 
