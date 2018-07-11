@@ -1,9 +1,6 @@
 import argparse
 import os
-from trainer import *
-from trainer_UNIT import *
-from trainer_DIT import *
-from trainer_seg import *
+from trainer_EGUNIT import *
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -33,7 +30,7 @@ parser.add_argument('--lr', dest='lr', type=float, default=0.0002, help='initial
 parser.add_argument('--beta1', dest='beta1', type=float, default=0.5, help='The exponential decay rate for the 1st moment estimates')
 parser.add_argument('--which_direction', dest='which_direction', default='AtoB', help='AtoB or BtoA')
 parser.add_argument('--phase', dest='phase', default='train', help='train, test')
-parser.add_argument('--save_freq', dest='save_freq', type=int, default=8000, help='save a model every save_freq iterations')
+parser.add_argument('--save_freq', dest='save_freq', type=int, default=4000, help='save a model every save_freq iterations')
 parser.add_argument('--print_freq', dest='print_freq', type=int, default=500, help='print the debug information every print_freq iterations')
 parser.add_argument('--continue_train', dest='continue_train', type=str2bool, default=False, help='if continue training, load the latest model: 1: true, 0: false')
 parser.add_argument('--model_dir', dest='model_dir', type=str, default='./checkpoint', help='models are saved here')
@@ -65,6 +62,8 @@ parser.add_argument('--KL_weight', type=float, default=0.1, help='Weight about V
 parser.add_argument('--L1_weight', type=float, default=100.0, help='Weight about VAE, lambda2' )
 parser.add_argument('--KL_cycle_weight', type=float, default=0.1, help='Weight about VAE Cycle, lambda3')
 parser.add_argument('--L1_cycle_weight', type=float, default=100.0, help='Weight about VAE Cycle, lambda4')
+parser.add_argument('--style_weight', type=float, default=1e4, help='Weight about VGG style loss, lambda_s')
+parser.add_argument('--content_weight', type=float, default=100.0, help='Weight about VGG content loss, lambda_c')
 
 parser.add_argument('--ch', type=int, default=64, help='base channel number per layer')
 parser.add_argument('--n_encoder', type=int, default=3, help='The number of encoder')
@@ -133,261 +132,15 @@ if __name__ == '__main__':
         os.makedirs(args.test_dir)
 
     if 0==args.model:
-        ## use original image input
-        tf.app.run()
+        trainer = UNIT_VAEGAN_recon(args)         
+    elif 1==args.model:
+        trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(args)
+        
+
+    trainer.init_net(args)
+        
+    if args.phase == 'train':
+        # trainer.train_xG1D(args)
+        trainer.train(args)
     else:
-        ## use tf-record input
-        if 1==args.model:
-            trainer = sggan_tfrecord(args)
-        elif 2==args.model:
-            trainer = sggan_tfrecord_depth(args)
-        elif 3==args.model:
-            trainer = DispNet(args)
-        elif 4==args.model:
-            trainer = SegmentNet(args)
-        elif 5==args.model:
-            trainer = SegmentDispNet(args)  
-        elif 6==args.model:
-            trainer = sgganNoTargetDomainLabel_tfrecord(args)
-        elif 7==args.model:
-            trainer = cycada_tfrecord_depth(args)
-        elif 8==args.model:
-            trainer = sggan_cycada_tfrecord_depth(args)
-        elif 9==args.model:
-            trainer = cycada_imgsegG_tfrecord_depth(args)
-        elif 10==args.model:
-            trainer = cycada_imgsegGD_tfrecord_depth(args)
-        elif 11==args.model:
-            trainer = cycada_fT_tfrecord_depth(args)
-            
-        elif 1000==args.model:
-            trainer = UNIT(args)
-        # elif 1001==args.model:
-        #     trainer = UNIT_diffMap(args)
-        # elif 1002==args.model:
-        #     trainer = UNIT_PatchDis(args)
-        elif 1003==args.model:
-            trainer = UNIT_FeaLossDis(args)
-        # elif 1004==args.model:
-        #     trainer = UNIT_AE(args)
-        # elif 1005==args.model:
-        #     trainer = UNIT_sggan_DisMask_diffMap(args)            
-        # elif 1006==args.model:
-        #     trainer = UNIT_sggan_feaEncMask(args)
-        # elif 1007==args.model:
-        #     trainer = UNIT_muSigma(args)    
-        # elif 1008==args.model:
-        #     trainer = UNIT_FeaLossDis_diffMap(args)   
-        # elif 1009==args.model:
-        #     trainer = UNIT_sggan_feaEncMaskSegBranch(args)   
-        # elif 1010==args.model:
-        #     trainer = UNIT_sggan_imgEncMask_diffMap(args)  
-        # elif 1011==args.model:
-        #     trainer = UNIT_sggan_imgEncMask(args)  
-        # elif 1012==args.model:
-        #     trainer = UNIT_sggan_imgEncMaskBothMnoM(args)  
-        # elif 1020==args.model:
-        #     trainer = UNIT_recurrent(args)  
-        # elif 1030==args.model:
-        #     trainer = UNIT_triDis(args)
-        # elif 1040==args.model:
-        #     trainer = UNIT_SpecificBranch(args)
-        # elif 1042==args.model:
-        #     trainer = UNIT_SpecificBranch_sggan_imgEncMask(args)
-        # elif 1043==args.model:
-        #     trainer = UNIT_SpecificBranchCycle(args)
-        # elif 1044==args.model:
-        #     trainer = UNIT_SpecificBranchCycle_sggan_imgEncMask(args)
-        # elif 1045==args.model:
-        #     trainer = UNIT_MultiSpecificBranch_Cycle(args)
-        # elif 1046==args.model:
-        #     trainer = UNIT_SpecificBranchCycle_LAB(args)
-        # elif 1047==args.model:
-        #     trainer = UNIT_SpecificBranchCycle_simple(args)
-
-
-        elif 1050==args.model:
-            trainer = UNIT_AdaIN(args)
-        elif 1051==args.model:
-            trainer = UNIT_AdaINCycle(args)
-
-        elif 1060==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg(args)
-        elif 1061==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_Cycle(args)
-        elif 1062==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_Cycle_simple(args)
-        elif 1063==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_Cycle_FCN(args)
-        elif 1064==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_Cycle_simple_GradSmooth(args)
-        elif 1065==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_Cycle_simple_GaussianSmooth(args)
-        elif 1066==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_Cycle_simple_tvSmooth(args)
-        elif 1067==args.model:
-            trainer = UNIT_MultiSpecificBranchFromImg_simple(args)
-
-        elif 1070==args.model:
-            trainer = UNIT_VggSpecificBranchFromImg_Cycle(args)
-        elif 1071==args.model:
-            trainer = UNIT_VggSpecificBranchFromImg_Cycle_VggLoss(args)
-        elif 1072==args.model:
-            trainer = UNIT_VggSpecificBranchFromImg_Cycle_FeaLossDis(args)
-        elif 1073==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_VggLoss_noGAN_LAB(args)
-        elif 1074==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes(args)
-        elif 1075==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_LAB(args)
-        elif 1076==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_MultiDis(args)
-        elif 1077==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_VggDis(args)
-        elif 1078==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_VggLoss(args)
-        elif 1079==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_VggLoss_noGAN(args)
-
-
-        # elif 1080==args.model:
-        #     trainer = UNIT_MultiSpecificBranchFromImg_Cycle_simple_recon(args)
-        # elif 1081==args.model:
-        #     trainer = UNIT_MultiSpecificBranchFromImg_Cycle_simple_fixDec(args)
-
-        elif 1090==args.model:
-            trainer = UNIT_VAEGAN_recon(args)
-        elif 1091==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes(args)
-        elif 1092==args.model:
-            trainer = UNIT_MultiDecSpecificBranchFromImg_Cycle_ChangeRes(args)
-        elif 1093==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask(args)
-        elif 1094==args.model:
-            trainer = UNIT_MultiDecSpecificBranchFromImg_Cycle_ChangeRes_FeaMask(args)
-        elif 1095==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_EncStyleContentLoss(args)
-        elif 1096==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_EncStyleContentLoss_noGAN(args)
-        elif 1097==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_VggStyleContentLoss(args)
-        elif 1098==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_EncStyleContentLoss(args)            
-        elif 1099==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(args)
-        elif 1100==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_Pair(args)            
-        elif 1101==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_Triplet(args)
-        elif 1102==args.model:
-            trainer = UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(args)
-        elif 1103==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMaskFromOther_EncStyleContentLoss(args)
-        elif 1104==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_EncStyleContentLoss_FCN8Loss(args)
-        elif 1105==args.model:
-            trainer = UNIT_VAEGAN_recon_CombData(args)
-        elif 1106==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_ShareSB(args)
-        elif 1107==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_ConvFeaMask(args)
-        elif 1108==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_BlurFeaMask(args)
-        elif 1109==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_UnpoolShare(args)
-        elif 1110==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_UnpoolEncGen(args)
-        elif 1111==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_GF(args)
-        elif 1112==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_ConvGF(args)
-        elif 1113==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_ImgConvDynGF(args)
-        elif 1114==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_ImgConvDynGF_OnlyCrossDomain(args)
-        elif 1115==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss_GFhigh(args)
-
-
-        elif 1200==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_EncStyleContentLoss_LearnIN(args)    
-
-
-        elif 1300==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_Grad(args)  
-
-        elif 1400==args.model:
-            trainer = UNIT_VAEGAN_LatentTransform(args)  
-
-        elif 1500==args.model:
-            trainer = UNIT_CycleGAN(args) 
-        elif 1501==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_CycleGAN_ChangeRes_FeaMask_VggStyleContentLoss(args) 
-        elif 1502==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_FeaMask_VggStyleContentLoss(args) 
-        elif 1503==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss_EncIN(args) 
-        elif 1504==args.model:
-            trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMaskE2E_VggStyleContentLoss(args)
-
-
-        # elif 2000==args.model:
-        #     trainer = SegmentNet_DispNet(args)
-        elif 2001==args.model:
-            trainer = SegmentNet_LinkNet(args)
-        elif 2002==args.model:
-            trainer = SegmentNet_LinkNet_targetLabel(args)
-        elif 2003==args.model:
-            trainer = SegmentNet_FCN8(args)
-        elif 2004==args.model:
-            trainer = SegmentNet_FCN8_targetLabel(args)
-        elif 2005==args.model:
-            trainer = SegmentNet_ICNet(args)
-        elif 2006==args.model:
-            trainer = SegmentNet_ICNet_targetLabel(args)
-
-            
-        elif 3000==args.model:
-            trainer = UNIT_SpecificBranchCycle_LinkNet(args)
-            
-            
-        elif 4000==args.model:
-            trainer = DIT_VggStyle(args)
-        elif 4001==args.model:
-            trainer = DIT_EncStyle(args)
-        elif 4002==args.model:
-            trainer = DIT_AEGAN_Recon(args)
-        elif 4003==args.model:
-            trainer = DIT_VAEGAN_Recon(args)
-        elif 4004==args.model:
-            trainer = DIT_EncStyle_AERecon(args)
-        elif 4005==args.model:
-            trainer = DIT_EncStyle_VAERecon(args)
-        elif 4006==args.model:
-            trainer = DIT_EncStyle_AERecon_Cycle(args)
-        elif 4007==args.model:
-            trainer = DIT_EncStyle_AERecon_Cycle_FixAaBb(args)
-        elif 4008==args.model:
-            trainer = DIT_EncStyle_AERecon_Cycle_GenSeg(args)
-        elif 4009==args.model:
-            trainer = DIT_VggStyle_AERecon(args)
-        elif 4010==args.model:
-            trainer = DIT_VggStyle_AERecon_UnetGen(args)
-        elif 4011==args.model:
-            trainer = DIT_VggStyle_AERecon_BothVec(args)
-        elif 4012==args.model:
-            trainer = DIT_VggStyle_AERecon_noSeg(args)
-
-
-
-        # elif 1100==args.model:
-        #     trainer = UNIT_wxb(args)   
-            
-
-        trainer.init_net(args)
-            
-        if args.phase == 'train':
-            # trainer.train_xG1D(args)
-            trainer.train(args)
-        else:
-            trainer.test(args)
+        trainer.test(args)

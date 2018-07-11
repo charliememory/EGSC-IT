@@ -14,7 +14,7 @@ from utils import *
 from loss_func import *
 
 ## Use tf record to speed up
-from datasets import gta, synsf, dataset_utils, celeba
+from datasets import gta, dataset_utils, celeba
 
 import ops_UNIT
 from labels_utils import *
@@ -1853,7 +1853,7 @@ class UNIT_MultiSpecificBranchFromImg_simple(UNIT_MultiSpecificBranchFromImg_Cyc
 
 
 import nets.vgg
-import tensorflow_vgg.vgg19
+import tensorflow_vgg19
 class UNIT_VggSpecificBranchFromImg_Cycle(UNIT_MultiSpecificBranchFromImg_Cycle):
     def init_net(self, args):
         assert args.pretrained_vgg_path is not None
@@ -4551,7 +4551,7 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_VggStyleContentLoss(UNI
         self.sess = sv.prepare_or_wait_for_session(config=sess_config)
 
     def vgg_net(self, x, is_training=False, reuse=False, scope="style_content_vgg"):
-        vgg = tensorflow_vgg.vgg19.Vgg19_style('./weights/vgg19.npy')
+        vgg = tensorflow_vgg19.Vgg19_style('./weights/vgg19.npy')
         with tf.variable_scope(scope, reuse=reuse):
             ## x should be rgb image [batch, height, width, 3] values scaled [0, 1]
             x = (x+1.0)/2.0 ## preprocess
@@ -4936,7 +4936,7 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         self.sess = sv.prepare_or_wait_for_session(config=sess_config)
 
     def vgg_net(self, x, is_training=False, reuse=False, scope="style_content_vgg"):
-        vgg = tensorflow_vgg.vgg19.Vgg19_style('./weights/vgg19.npy')
+        vgg = tensorflow_vgg19.Vgg19_style('./weights/vgg19.npy')
         with tf.variable_scope(scope, reuse=reuse):
             ## x should be rgb image [batch, height, width, 3] values scaled [0, 1]
             x = (x+1.0)/2.0 ## preprocess
@@ -7684,7 +7684,7 @@ class UNIT_MultiVggSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         return fea_list, gamma_list, beta_list
 
     def vgg_net(self, x, is_training=False, reuse=False, scope="style_content_vgg"):
-        vgg = tensorflow_vgg.vgg19.Vgg19_style('./weights/vgg19.npy')
+        vgg = tensorflow_vgg19.Vgg19_style('./weights/vgg19.npy')
         with tf.variable_scope(scope, reuse=reuse):
             ## x should be rgb image [batch, height, width, 3] values scaled [0, 1]
             x = (x+1.0)/2.0 ## preprocess

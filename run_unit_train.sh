@@ -1,14 +1,8 @@
 #!/bin/bash
-source ~/.bashrc_qianrusun2
+source ~/.bashrc_liqianma
 
 ## Copy data to local tmp dir for fast access
-data_parent_dir='/BS/sun_project2/work/mlq_project/WassersteinGAN/data'
-
-# data_name='gta25k20'
-# segment_class=20
-# # dataset_dir='gta25k_city_train_256x512_20trainId'
-# dataset_dir='gta25k_city_train_512x1024_20trainId'
-# # dataset_dir='gta25k_city_train_256x512_20trainId_onlyLabeled2975'
+data_parent_dir='./data'
 
 data_name='gta25k8'
 segment_class=8
@@ -16,49 +10,11 @@ dataset_dir='gta25k_city_train_512x1024_8catId'
 
 data_name='gta25k8bdd'
 segment_class=8
-# dataset_dir='gta25k_city_train_256x512_8catId'
 dataset_dir='gta25k_bdd_train_512x1024_8catId'
-# dataset_dir='gta25k_city_train_256x512_8catId_onlyLabeled2975'
-
-# data_name='gta25k8bdd_ssim_select_style'
-# segment_class=8
-# dataset_dir='gta25k_bdd_ssim_select_style_train4test_256x512_8catId'
-
-# data_name='gta25k8bdd_day'
-# segment_class=8
-# dataset_dir='gta25k_bdd_day_train_512x1024_8catId'
-
-# data_name='gta25k8bdd_night'
-# segment_class=8
-# dataset_dir='gta25k_bdd_night_train_512x1024_8catId'
-
-# data_name='gta'
-# segment_class=8
-# dataset_dir='gta_city_train_256x512'
-
-# data_name='synsf'
-# dataset_dir='synsf_city_train_256x832_segclass'  # model=2
-# model=1000
 
 # data_name='celebaMaleFemaleCropTrTs'
 # segment_class=8
 # dataset_dir='celebaMaleFemale_train_128x128'
-
-# # data_name='mnist'
-# # segment_class=8
-# # dataset_dir='mnist_train_28x28'
-
-# data_name='mnist_multi'
-# segment_class=8
-# dataset_dir='mnist_multi_train_112x112'
-
-# data_name='mnist_multi_fixColor'
-# segment_class=8
-# dataset_dir='mnist_multi_fixColor_train_112x112'
-
-# data_name='mnist_multi_jitterColor'
-# segment_class=8
-# dataset_dir='mnist_multi_jitterColor_train_112x112'
 
 # data_name='mnist_BW'
 # segment_class=8
@@ -68,9 +24,6 @@ dataset_dir='gta25k_bdd_train_512x1024_8catId'
 # segment_class=8
 # dataset_dir='mnist_multi_jitterColor_BW_train_112x112'
 
-# data_name='mnist_svhn'
-# segment_class=8
-# dataset_dir='mnist_svhn_train_32x32'
 
 model=1099
 gpu=0

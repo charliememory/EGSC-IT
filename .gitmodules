@@ -1,6 +1,6 @@
 [submodule "tensorflow_vgg"]
 	path = tensorflow_vgg
 	url = https://github.com/charliememory/tensorflow-vgg
-[submodule "tensorflow_vgg_charliememory"]
-	path = tensorflow_vgg_charliememory
+[submodule "my_tensorflow_vgg"]
+	path = my_tensorflow_vgg
 	url = https://github.com/charliememory/tensorflow-vgg

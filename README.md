@@ -1,10 +1,10 @@
 # Exemplar Guided Unsupervised Image-to-Image
 Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised Image-to-Image](https://arxiv.org/abs/1805.11145)
 
-![alt text](https://gitlab.esat.kuleuven.be/Liqian.Ma/EG-UNIT/raw/master/imgs/teaser_GTA2BDD.svg)
+![alt text](imgs/teaser_GTA2BDD.svg)
 
 ## Network architecture
-![alt text](https://gitlab.esat.kuleuven.be/Liqian.Ma/EG-UNIT/raw/master/imgs/framework_EGUNIT_test.svg)
+![alt text](imgs/framework_EGUNIT_test.svg)
 ![alt text](imgs/info_flow_in_autoencoder.png)
 
 ## Dependencies
@@ -20,7 +20,10 @@ Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised 
 ## Resources
 - Pretrained models: 
 - Training & Testing data in tf-record format: [MNIST](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/mnist_tf.zip), [Celeba](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/celeba_tf.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/gta_city_tf.zip). [GTA<->BDD](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/gta_bdd_tf.zip).
+Note: For the GTA<->Cityscapes and GTA<->BDD experiments, the data are prepared with RGB images of 512x1024 resolution, and segmentation labels of 8 categories. They are provided used for further research. In our paper, we use RGB images of 256x512 resolution without and segmentation labels.
 
-## Segmentation model 
+## Segmentation model
 Refer to [DeepLab-ResNet-TensorFlow](https://github.com/DrSleep/tensorflow-deeplab-resnet)
 
+
+## Results
