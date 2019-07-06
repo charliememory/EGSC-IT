@@ -1,10 +1,10 @@
-# Exemplar Guided Unsupervised Image-to-Image
-Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised Image-to-Image](https://arxiv.org/abs/1805.11145)
+# Exemplar Guided Unsupervised Image-to-Image Translation with Semantic Consistency
+Tensorflow implementation of ICLR 2019 paper [Exemplar Guided Unsupervised Image-to-Image Translation with Semantic Consistency](https://openreview.net/pdf?id=S1lTg3RqYQ)
 
 ![alt text](imgs/teaser_GTA2BDD.svg)
 
 ## Network architecture
-    ![alt text](imgs/framework_EGUNIT_test.svg)
+    ![alt text](imgs/framework_EGSCIT_test.svg)
     ![alt text](imgs/info_flow_in_autoencoder.png)
 
 ## Dependencies
@@ -18,8 +18,8 @@ Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised 
 
 
 ## Resources
-    - Pretrained models: [MNIST](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/models/mnist_models.zip), [MNIST_multi](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/models/mnist_multi_models.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/models/gta_city_models.zip), [GTA<->BDD](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/models/gta_bdd_models.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/models/gta_city_models.zip), [CelebA](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/models/celeba_models.zip)
-    - Training & Testing data in tf-record format: [MNIST](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/mnist_tf.zip), [MNIST_multi](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/mnist_multi_tf.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/gta_city_tf.zip). [GTA<->BDD](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/gta_bdd_tf.zip), [CelebA](http://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/celeba_tf.zip).
+    - Pretrained models: [MNIST](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/models/mnist_models.zip), [MNIST_multi](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/models/mnist_multi_models.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/models/gta_city_models.zip), [GTA<->BDD](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/models/gta_bdd_models.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/models/gta_city_models.zip), [CelebA](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/models/celeba_models.zip), [VGG19](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/weights/vgg19.npy)
+    - Training & Testing data in tf-record format: [MNIST](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/data/mnist_tf.zip), [MNIST_multi](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/data/mnist_multi_tf.zip), [GTA<->Cityscapes](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/data/gta_city_tf.zip). [GTA<->BDD](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/data/gta_bdd_tf.zip), [CelebA](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/data/celeba_tf.zip).
     Note: For the GTA<->Cityscapes and GTA<->BDD experiments, the data are prepared with RGB images of 512x1024 resolution, and segmentation labels of 8 categories. They are provided used for further research. In our paper, we use RGB images of 256x512 resolution without and segmentation labels.
     - Segmentation model
     Refer to [DeepLab-ResNet-TensorFlow](https://github.com/DrSleep/tensorflow-deeplab-resnet)
@@ -35,23 +35,23 @@ Tensorflow implementation of NIPS 2018 submission [Exemplar Guided Unsupervised 
 ## Training steps
     1. Replace the links `data`, 'logs', 'weights' with your own directories or links.
     2. Download the tf-record training data to the `data_parent_dir` (default `./data`).
-    3. Modify the `data_parent_dir`, `checkpoint_dir` and comment/uncomment the target experiment in the `run_train_feaMask.sh` and `run_train_EGUNIT.sh` scripts.
-    4. run `run_train_feaMask.sh` and `run_train_EGUNIT.sh`.
+    3. Modify the `data_parent_dir`, `checkpoint_dir` and comment/uncomment the target experiment in the `run_train_feaMask.sh` and `run_train_EGSCIT.sh` scripts.
+    4. run `run_train_feaMask.sh` and `run_train_EGSCIT.sh`.
  
 ## Testing steps
     1. Replace the links `data`, 'logs', 'weights' with your own directories or links.
     2. (Optional) Download the pretrained models to the `checkpoint_dir` (default `./logs`).
     3. Download the tf-record testing data to the `data_parent_dir` (default `./data`).
-    4. Modify the `data_parent_dir`, `checkpoint_dir` and comment/uncomment the target experiment in the `run_test_EGUNIT.sh` script.
-    5. run `run_test_EGUNIT.sh`. 
+    4. Modify the `data_parent_dir`, `checkpoint_dir` and comment/uncomment the target experiment in the `run_test_EGSCIT.sh` script.
+    5. run `run_test_EGSCIT.sh`. 
 
 ## Citation
 ```
 @article{ma2018exemplar,
-  title={Exemplar Guided Unsupervised Image-to-Image Translation},
+  title={Exemplar Guided Unsupervised Image-to-Image Translation with Semantic Consistency},
   author={Ma, Liqian and Jia, Xu and Georgoulis, Stamatios and Tuytelaars, Tinne and Van Gool, Luc},
-  journal={arXiv preprint arXiv:1805.11145},
-  year={2018}
+  journal={ICLR},
+  year={2019}
 }
 ```
 

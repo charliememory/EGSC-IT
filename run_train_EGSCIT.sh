@@ -9,7 +9,7 @@ if [ ! -f ./weights/vgg19.npy ]; then
     # rm -rf ${dst_dir}
     mkdir weights
     cd weights
-    wget https://homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/weights/vgg19.npy
+    wget https://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/weights/vgg19.npy
     cd -
 fi
 
@@ -81,7 +81,7 @@ G_update=5
 ###############################################################
 
 
-model_dir=${checkpoint_dir}'MODEL'${model}'_EGUNIT_'${data_name}'_bs'${bs}'_lr'${lr}'_'${style_weight}'Style_'${content_weight}'Content'
+model_dir=${checkpoint_dir}'MODEL'${model}'_EGSCIT_'${data_name}'_bs'${bs}'_lr'${lr}'_'${style_weight}'Style_'${content_weight}'Content'
 pretrained_path=${checkpoint_dir}'MODEL0_'${data_name}'_bs'${bs}'_lr'${lr}'/UNIT.model-0'
 python main.py --model_dir=${model_dir} --phase='train' \
                --data_parent_dir=${data_parent_dir}  --dataset_dir=${dataset_dir}  \

@@ -6,11 +6,18 @@ import scipy.ndimage
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 pp = pprint.PrettyPrinter()
 
 get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
 
+#### Count param number
+def count_params():
+    "print number of trainable variables"
+    size = lambda v: reduce(lambda x, y: x*y, v.get_shape().as_list())
+    n = sum(size(v) for v in tf.trainable_variables())
+    print "Model size: %dK" % (n/1000,)
 
 #######################################################################
 ############################ I/O functions ############################

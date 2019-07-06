@@ -1,6 +1,6 @@
 import argparse
 import os
-from trainer_EGUNIT import *
+from trainer_EGSCIT import *
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -136,6 +136,8 @@ if __name__ == '__main__':
     elif 1==args.model:
         trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(args)
         
+    count_params()
+    pdb.set_trace()
 
     trainer.init_net(args)
         

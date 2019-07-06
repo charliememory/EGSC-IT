@@ -15,7 +15,7 @@ from loss_func import *
 ## Use tf record to speed up
 from datasets import gta, dataset_utils, celeba
 
-import ops_EGUNIT
+import ops_EGSCIT
 from labels_utils import *
 
 import tensorflow_vgg19
@@ -179,15 +179,15 @@ class UNIT(object):
     def encoder(self, x, is_training=True, reuse=False, scope="encoder"):
         channel = self.ngf
         with tf.variable_scope(scope, reuse=reuse) :
-            x = ops_EGUNIT.conv(x, channel, kernel=7, stride=1, pad=3, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
+            x = ops_EGSCIT.conv(x, channel, kernel=7, stride=1, pad=3, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
 
             for i in range(1, self.n_encoder) :
-                x = ops_EGUNIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
+                x = ops_EGSCIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
                 channel *= 2
 
             # channel = 256
             for i in range(0, self.n_enc_resblock) :
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
 
@@ -202,11 +202,11 @@ class UNIT(object):
         channel = self.ngf * pow(2, self.n_encoder-1)
         with tf.variable_scope(scope, reuse=reuse) :
             for i in range(0, self.n_enc_share) :
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
 
-            x = ops_EGUNIT.gaussian_noise_layer(x)
+            x = ops_EGSCIT.gaussian_noise_layer(x)
 
             return x
 
@@ -214,7 +214,7 @@ class UNIT(object):
         channel = self.ngf * pow(2, self.n_encoder-1)
         with tf.variable_scope(scope, reuse=reuse) :
             for i in range(0, self.n_gen_share) :
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
 
@@ -228,16 +228,16 @@ class UNIT(object):
         channel = self.ngf * pow(2, self.n_encoder - 1)
         with tf.variable_scope(scope, reuse=reuse) :
             for i in range(0, self.n_gen_resblock) :
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
 
             for i in range(0, self.n_gen_decoder-1) :
-                x = ops_EGUNIT.deconv(x, channel//2, kernel=3, stride=2, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='deconv_'+str(i))
+                x = ops_EGSCIT.deconv(x, channel//2, kernel=3, stride=2, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='deconv_'+str(i))
                 channel = channel // 2
 
-            x = ops_EGUNIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn='tanh', scope='deconv_tanh')
-            # x = ops_EGUNIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn=None, scope='deconv_out')
+            x = ops_EGSCIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn='tanh', scope='deconv_tanh')
+            # x = ops_EGSCIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn=None, scope='deconv_out')
 
             return x
     # END of DECODERS
@@ -248,14 +248,14 @@ class UNIT(object):
     # def discriminator(self, x, reuse=False, scope="discriminator"):
     #     channel = self.ndf
     #     with tf.variable_scope(scope, reuse=reuse):
-    #         x = ops_EGUNIT.conv(x, channel, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
+    #         x = ops_EGSCIT.conv(x, channel, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
 
     #         for i in range(1, self.n_dis) :
-    #             x = ops_EGUNIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
+    #             x = ops_EGSCIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
     #             channel *= 2
 
-    #         x = ops_EGUNIT.conv(x, channels=1, kernel=1, stride=1, pad=0, normal_weight_init=self.normal_weight_init, activation_fn=None, scope='dis_logit')
-    #         # x = ops_EGUNIT.conv(x, channels=1, kernel=1, stride=1, pad=0, normal_weight_init=self.normal_weight_init, activation_fn='sigmoid', scope='dis_logit')
+    #         x = ops_EGSCIT.conv(x, channels=1, kernel=1, stride=1, pad=0, normal_weight_init=self.normal_weight_init, activation_fn=None, scope='dis_logit')
+    #         # x = ops_EGSCIT.conv(x, channels=1, kernel=1, stride=1, pad=0, normal_weight_init=self.normal_weight_init, activation_fn='sigmoid', scope='dis_logit')
 
     #         return x
     # # END of DISCRIMINATORS
@@ -263,13 +263,13 @@ class UNIT(object):
 
     ##############################################################################
     # BEGIN of DISCRIMINATORS
-    def discriminator(self, x, reuse=False, is_training=True, scope="discriminator", activation_fn=ops_EGUNIT.LeakyReLU):
+    def discriminator(self, x, reuse=False, is_training=True, scope="discriminator", activation_fn=ops_EGSCIT.LeakyReLU):
         channel = self.ndf
         with tf.variable_scope(scope, reuse=reuse):
             x = activation_fn(slim.conv2d(x, channel, 4, 2, activation_fn=activation_fn, scope='conv_0'))
             for i in range(1, self.n_dis) :
                 channel *= 2
-                x = activation_fn(ops_EGUNIT.instance_norm(slim.conv2d(x, channel, 4, 2, activation_fn=activation_fn, scope='conv_'+str(i)),scope='ins_norm_'+str(i)))
+                x = activation_fn(ops_EGSCIT.instance_norm(slim.conv2d(x, channel, 4, 2, activation_fn=activation_fn, scope='conv_'+str(i)),scope='ins_norm_'+str(i)))
             x = activation_fn(slim.conv2d(x, 1, 1, 1, activation_fn=None, scope='dis_logit'))
             return x
     # END of DISCRIMINATORS
@@ -342,20 +342,20 @@ class UNIT(object):
             self.fake_A, _ = self.generate_b2a(domain_B) # for test
 
         """ Define Loss """
-        G_ad_loss_a = ops_EGUNIT.generator_loss(fake_A_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
-        G_ad_loss_b = ops_EGUNIT.generator_loss(fake_B_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
+        G_ad_loss_a = ops_EGSCIT.generator_loss(fake_A_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
+        G_ad_loss_b = ops_EGSCIT.generator_loss(fake_B_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
 
-        D_ad_loss_a = ops_EGUNIT.discriminator_loss(real_A_logit, fake_A_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
-        D_ad_loss_b = ops_EGUNIT.discriminator_loss(real_B_logit, fake_B_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
+        D_ad_loss_a = ops_EGSCIT.discriminator_loss(real_A_logit, fake_A_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
+        D_ad_loss_b = ops_EGSCIT.discriminator_loss(real_B_logit, fake_B_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
 
-        enc_loss = ops_EGUNIT.KL_divergence(shared)
-        enc_bab_loss = ops_EGUNIT.KL_divergence(shared_bab)
-        enc_aba_loss = ops_EGUNIT.KL_divergence(shared_aba)
+        enc_loss = ops_EGSCIT.KL_divergence(shared)
+        enc_bab_loss = ops_EGSCIT.KL_divergence(shared_bab)
+        enc_aba_loss = ops_EGSCIT.KL_divergence(shared_aba)
 
-        l1_loss_a = ops_EGUNIT.L1_loss(x_aa, domain_A) # identity
-        l1_loss_b = ops_EGUNIT.L1_loss(x_bb, domain_B) # identity
-        l1_loss_aba = ops_EGUNIT.L1_loss(x_aba, domain_A) # reconstruction
-        l1_loss_bab = ops_EGUNIT.L1_loss(x_bab, domain_B) # reconstruction
+        l1_loss_a = ops_EGSCIT.L1_loss(x_aa, domain_A) # identity
+        l1_loss_b = ops_EGSCIT.L1_loss(x_bb, domain_B) # identity
+        l1_loss_aba = ops_EGSCIT.L1_loss(x_aba, domain_A) # reconstruction
+        l1_loss_bab = ops_EGSCIT.L1_loss(x_bab, domain_B) # reconstruction
 
         Generator_A_loss = self.GAN_weight * G_ad_loss_a + \
                            self.L1_weight * l1_loss_a + \
@@ -896,17 +896,17 @@ class UNIT_VAEGAN_recon(UNIT):
         fake_B_logit = self.discriminator(self.x_bb, reuse=True, scope="discriminator_B")
 
         """ Define Loss """
-        G_ad_loss_a = ops_EGUNIT.generator_loss(fake_A_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
-        G_ad_loss_b = ops_EGUNIT.generator_loss(fake_B_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
+        G_ad_loss_a = ops_EGSCIT.generator_loss(fake_A_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
+        G_ad_loss_b = ops_EGSCIT.generator_loss(fake_B_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
 
-        D_ad_loss_a = ops_EGUNIT.discriminator_loss(real_A_logit, fake_A_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
-        D_ad_loss_b = ops_EGUNIT.discriminator_loss(real_B_logit, fake_B_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
+        D_ad_loss_a = ops_EGSCIT.discriminator_loss(real_A_logit, fake_A_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
+        D_ad_loss_b = ops_EGSCIT.discriminator_loss(real_B_logit, fake_B_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
 
-        enc_loss_a = ops_EGUNIT.KL_divergence(latent_A)
-        enc_loss_b = ops_EGUNIT.KL_divergence(latent_B)
+        enc_loss_a = ops_EGSCIT.KL_divergence(latent_A)
+        enc_loss_b = ops_EGSCIT.KL_divergence(latent_B)
 
-        l1_loss_a = ops_EGUNIT.L1_loss(self.x_aa, domain_A) # identity
-        l1_loss_b = ops_EGUNIT.L1_loss(self.x_bb, domain_B) # identity
+        l1_loss_a = ops_EGSCIT.L1_loss(self.x_aa, domain_A) # identity
+        l1_loss_b = ops_EGSCIT.L1_loss(self.x_bb, domain_B) # identity
 
         # Generator_A_loss = self.L1_weight * l1_loss_a + \
         #                    self.KL_weight * enc_loss_a
@@ -1071,15 +1071,15 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         channel = self.ngf
         feaMap_list, gamma_list, beta_list = [], [], []
         with tf.variable_scope(scope, reuse=reuse) :
-            x = ops_EGUNIT.conv(x, channel, kernel=7, stride=1, pad=3, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
+            x = ops_EGSCIT.conv(x, channel, kernel=7, stride=1, pad=3, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
 
             for i in range(1, self.n_encoder) :
-                x = ops_EGUNIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
+                x = ops_EGSCIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
                 channel *= 2
 
             # channel = 256
             for i in range(0, self.n_enc_resblock) :
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
                 feaMap_list.append(x)
@@ -1121,20 +1121,20 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
                     x1, x2 = tf.split(x, 2, axis=0)
                     ## (x1,x2) is (x_Aa,x_Ba) or (x_Ab,x_Bb)
                     x1 = self.apply_feaMap_mask(x1, feaMapA)
-                    x1 = ops_EGUNIT.apply_ins_norm_2d(x1, gamma, beta)
+                    x1 = ops_EGSCIT.apply_ins_norm_2d(x1, gamma, beta)
                     x2 = self.apply_feaMap_mask(x2, feaMapB)
-                    x2 = ops_EGUNIT.apply_ins_norm_2d(x2, gamma, beta)
+                    x2 = ops_EGSCIT.apply_ins_norm_2d(x2, gamma, beta)
                     x = tf.concat([x1,x2], axis=0)
 
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
 
             for i in range(0, self.n_gen_decoder-1) :
-                x = ops_EGUNIT.deconv(x, channel//2, kernel=3, stride=2, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='deconv_'+str(i))
+                x = ops_EGSCIT.deconv(x, channel//2, kernel=3, stride=2, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='deconv_'+str(i))
                 channel = channel // 2
 
-            x = ops_EGUNIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn='tanh', scope='deconv_tanh')
+            x = ops_EGSCIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn='tanh', scope='deconv_tanh')
 
             return x
     # END of DECODERS
@@ -1156,17 +1156,17 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
                     if gamma_list is not None and beta_list is not None:
                         gamma, beta = gamma_list[-1-i], beta_list[-1-i]
                         assert x.get_shape().as_list()[0]==gamma.get_shape().as_list()[0]
-                        x = ops_EGUNIT.apply_ins_norm_2d(x, gamma, beta)
+                        x = ops_EGSCIT.apply_ins_norm_2d(x, gamma, beta)
 
-                x = ops_EGUNIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
+                x = ops_EGSCIT.resblock(x, channel, kernel=3, stride=1, pad=1, dropout_ratio=self.res_dropout,
                              normal_weight_init=self.normal_weight_init,
                              is_training=is_training, norm_fn=self.norm, scope='resblock_'+str(i))
 
             for i in range(0, self.n_gen_decoder-1) :
-                x = ops_EGUNIT.deconv(x, channel//2, kernel=3, stride=2, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='deconv_'+str(i))
+                x = ops_EGSCIT.deconv(x, channel//2, kernel=3, stride=2, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='deconv_'+str(i))
                 channel = channel // 2
 
-            x = ops_EGUNIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn='tanh', scope='deconv_tanh')
+            x = ops_EGSCIT.deconv(x, self.output_c_dim, kernel=1, stride=1, normal_weight_init=self.normal_weight_init, activation_fn='tanh', scope='deconv_tanh')
 
             return x
     # END of DECODERS
@@ -1231,24 +1231,24 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         content_loss = 0.
         for i in range(num):
         # for i in range(2,num):
-            # content_loss += ((float(i+1)/float(num))**2)*tf.reduce_mean(ops_EGUNIT.L1_loss(feaMap_list_A[i], feaMap_list_ab[i])) \
-            #             + ((float(i+1)/float(num))**2)*tf.reduce_mean(ops_EGUNIT.L1_loss(feaMap_list_B[i], feaMap_list_ba[i]))
+            # content_loss += ((float(i+1)/float(num))**2)*tf.reduce_mean(ops_EGSCIT.L1_loss(feaMap_list_A[i], feaMap_list_ab[i])) \
+            #             + ((float(i+1)/float(num))**2)*tf.reduce_mean(ops_EGSCIT.L1_loss(feaMap_list_B[i], feaMap_list_ba[i]))
             # with tf.variable_scope('content_loss', reuse=tf.AUTO_REUSE):
             if self.content_loss_IN:
 
-                # feaMap_list_A[i] = tf.Print(feaMap_list_A[i], [ops_EGUNIT.self_ins_norm_2d(feaMap_list_A[i])*1e-8- ops_EGUNIT.self_ins_norm_2d(feaMap_list_ab[i])*1e-8], summarize=40, message="fea_list[%d] is:"%i)
-                content_loss += (float(i+1)/float(num))*ops_EGUNIT.L1_loss(ops_EGUNIT.instance_norm(feaMap_list_A[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE), ops_EGUNIT.instance_norm(feaMap_list_ab[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE)) \
-                            + (float(i+1)/float(num))*ops_EGUNIT.L1_loss(ops_EGUNIT.instance_norm(feaMap_list_B[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE), ops_EGUNIT.instance_norm(feaMap_list_ba[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE))
+                # feaMap_list_A[i] = tf.Print(feaMap_list_A[i], [ops_EGSCIT.self_ins_norm_2d(feaMap_list_A[i])*1e-8- ops_EGSCIT.self_ins_norm_2d(feaMap_list_ab[i])*1e-8], summarize=40, message="fea_list[%d] is:"%i)
+                content_loss += (float(i+1)/float(num))*ops_EGSCIT.L1_loss(ops_EGSCIT.instance_norm(feaMap_list_A[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE), ops_EGSCIT.instance_norm(feaMap_list_ab[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE)) \
+                            + (float(i+1)/float(num))*ops_EGSCIT.L1_loss(ops_EGSCIT.instance_norm(feaMap_list_B[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE), ops_EGSCIT.instance_norm(feaMap_list_ba[i], 'content_loss_%d'%i, False, tf.AUTO_REUSE))
                 # content_loss = tf.Print(content_loss, [content_loss], summarize=40, message="content_loss is:")
             else:
-                content_loss += (float(i+1)/float(num))*ops_EGUNIT.L1_loss(feaMap_list_A[i], feaMap_list_ab[i]) \
-                            + (float(i+1)/float(num))*ops_EGUNIT.L1_loss(feaMap_list_B[i], feaMap_list_ba[i])
+                content_loss += (float(i+1)/float(num))*ops_EGSCIT.L1_loss(feaMap_list_A[i], feaMap_list_ab[i]) \
+                            + (float(i+1)/float(num))*ops_EGSCIT.L1_loss(feaMap_list_B[i], feaMap_list_ba[i])
 
         ## Use target domain ecnoder to extract the style stastics, i.e. mean and var
         style_loss = 0.
         for i in range(num):
-            style_loss += ops_EGUNIT.L1_loss(ops_EGUNIT.gram_matrix(feaMap_list_ab[i]), ops_EGUNIT.gram_matrix(feaMap_list_B[i]))
-            style_loss += ops_EGUNIT.L1_loss(ops_EGUNIT.gram_matrix(feaMap_list_ba[i]), ops_EGUNIT.gram_matrix(feaMap_list_A[i]))
+            style_loss += ops_EGSCIT.L1_loss(ops_EGSCIT.gram_matrix(feaMap_list_ab[i]), ops_EGSCIT.gram_matrix(feaMap_list_B[i]))
+            style_loss += ops_EGSCIT.L1_loss(ops_EGSCIT.gram_matrix(feaMap_list_ba[i]), ops_EGSCIT.gram_matrix(feaMap_list_A[i]))
 
         return content_loss, style_loss
 
@@ -1301,20 +1301,20 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
             self.fake_A_insNormed, _ = self.generate_b2a(domain_B, None, gamma_list_A, beta_list_A) # for test without applying Instance Norm
 
         """ Define Loss """
-        G_ad_loss_a = ops_EGUNIT.generator_loss(fake_A_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
-        G_ad_loss_b = ops_EGUNIT.generator_loss(fake_B_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
+        G_ad_loss_a = ops_EGSCIT.generator_loss(fake_A_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
+        G_ad_loss_b = ops_EGSCIT.generator_loss(fake_B_logit, smoothing=self.smoothing, use_lsgan=self.use_lsgan)
 
-        D_ad_loss_a = ops_EGUNIT.discriminator_loss(real_A_logit, fake_A_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
-        D_ad_loss_b = ops_EGUNIT.discriminator_loss(real_B_logit, fake_B_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
+        D_ad_loss_a = ops_EGSCIT.discriminator_loss(real_A_logit, fake_A_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
+        D_ad_loss_b = ops_EGSCIT.discriminator_loss(real_B_logit, fake_B_logit, smoothing=self.smoothing, use_lasgan=self.use_lsgan)
 
-        enc_loss = ops_EGUNIT.KL_divergence(shared)
-        enc_bab_loss = ops_EGUNIT.KL_divergence(shared_bab)
-        enc_aba_loss = ops_EGUNIT.KL_divergence(shared_aba)
+        enc_loss = ops_EGSCIT.KL_divergence(shared)
+        enc_bab_loss = ops_EGSCIT.KL_divergence(shared_bab)
+        enc_aba_loss = ops_EGSCIT.KL_divergence(shared_aba)
 
-        l1_loss_a = ops_EGUNIT.L1_loss(x_aa, domain_A) # identity
-        l1_loss_b = ops_EGUNIT.L1_loss(x_bb, domain_B) # identity
-        l1_loss_aba = ops_EGUNIT.L1_loss(x_aba, domain_A) # reconstruction
-        l1_loss_bab = ops_EGUNIT.L1_loss(x_bab, domain_B) # reconstruction
+        l1_loss_a = ops_EGSCIT.L1_loss(x_aa, domain_A) # identity
+        l1_loss_b = ops_EGSCIT.L1_loss(x_bb, domain_B) # identity
+        l1_loss_aba = ops_EGSCIT.L1_loss(x_aba, domain_A) # reconstruction
+        l1_loss_bab = ops_EGSCIT.L1_loss(x_bab, domain_B) # reconstruction
 
         content_loss, style_loss = self.encoder_style_content_loss(domain_A, domain_B, x_ab, x_ba, is_training=False, reuse=tf.AUTO_REUSE)
         self.content_loss, self.style_loss = content_loss, style_loss

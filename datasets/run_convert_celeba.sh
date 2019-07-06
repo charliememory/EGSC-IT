@@ -7,7 +7,7 @@ dst_dir='../data/celeba'
 if [ ! -d ../data/celeba/testB ]; then
     #### Option 1: Download prepared data, then skip Option 2
     # cd ../data
-    # wget homes.esat.kuleuven.be/~liqianma/NIPS18_EGUNIT/data/celeba/celeba_crop_resize_tr_ts.zip
+    # wget homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/data/celeba/celeba_crop_resize_tr_ts.zip
     # unzip celeba_crop_resize_tr_ts.zip
     # mv celeba_crop_resize_tr_ts celeba
     # rm -f celeba_crop_resize_tr_ts.zip
