@@ -9,3 +9,5 @@ datasets/zip.sh
 datasets/logs
 ._*
 .gitmodules
+__pycache__/
+*/__pycache__/
