@@ -7,3 +7,5 @@ datasets/condor*
 datasets/*city*
 datasets/zip.sh
 datasets/logs
+._*
+.gitmodules
