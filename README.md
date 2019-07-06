@@ -4,7 +4,7 @@ Tensorflow implementation of ICLR 2019 paper [Exemplar Guided Unsupervised Image
 ![alt text](imgs/teaser_GTA2BDD.svg)
 
 ## Network architecture
-![alt text](imgs/framework_EGSCIT_test.svg)
+![alt text](imgs/framework_EGSCIT_test.jpg)
 ![alt text](imgs/info_flow_in_autoencoder.png)
 
 ## Dependencies
