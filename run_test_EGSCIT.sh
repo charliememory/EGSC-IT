@@ -6,7 +6,7 @@ gpu=0
 segment_class=8
 model=1
 
-########################### Chose exp by uncomment ###########################
+########################### Choose exp by uncomment ###########################
 # data_name='mnist'
 # dataset_dir='mnist_BW_test_28x28'
 # bs_train=8
@@ -79,7 +79,7 @@ content_weight=1e2
 ###############################################################
 
 
-model_dir=${checkpoint_dir}'MODEL'${model}'_'${data_name}'_bs'${bs_train}'_lr'${lr}'_'${style_weight}'Style_'${content_weight}'Content'
+model_dir=${checkpoint_dir}'MODEL1_'${data_name}'_bs'${bs_train}'_lr'${lr}'_'${style_weight}'Style_'${content_weight}'Content'
 pretrained_path=${checkpoint_dir}'MODEL0_'${data_name}'_bs'${bs_train}'_lr'${lr}'/UNIT.model-0'
 test_model_path=${model_dir}'/UNIT.model-0'
 python main.py --model_dir=${model_dir} --phase='test' \

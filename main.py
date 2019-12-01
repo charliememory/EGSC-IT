@@ -137,7 +137,6 @@ if __name__ == '__main__':
         trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(args)
         
     count_params()
-    pdb.set_trace()
 
     trainer.init_net(args)
         
@@ -145,3 +144,4 @@ if __name__ == '__main__':
         trainer.train(args)
     else:
         trainer.test(args)
+         

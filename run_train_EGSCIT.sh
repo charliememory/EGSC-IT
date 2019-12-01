@@ -81,7 +81,7 @@ G_update=5
 ###############################################################
 
 
-model_dir=${checkpoint_dir}'MODEL'${model}'_EGSCIT_'${data_name}'_bs'${bs}'_lr'${lr}'_'${style_weight}'Style_'${content_weight}'Content'
+model_dir=${checkpoint_dir}'MODEL1_'${data_name}'_bs'${bs}'_lr'${lr}'_'${style_weight}'Style_'${content_weight}'Content'
 pretrained_path=${checkpoint_dir}'MODEL0_'${data_name}'_bs'${bs}'_lr'${lr}'/UNIT.model-0'
 python main.py --model_dir=${model_dir} --phase='train' \
                --data_parent_dir=${data_parent_dir}  --dataset_dir=${dataset_dir}  \

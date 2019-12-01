@@ -7,6 +7,7 @@ import numpy as np
 import copy
 import matplotlib.pyplot as plt
 import tensorflow as tf
+from functools import reduce
 
 pp = pprint.PrettyPrinter()
 
@@ -17,7 +18,7 @@ def count_params():
     "print number of trainable variables"
     size = lambda v: reduce(lambda x, y: x*y, v.get_shape().as_list())
     n = sum(size(v) for v in tf.trainable_variables())
-    print "Model size: %dK" % (n/1000,)
+    print("Model size: {}K".format(n/1000,))
 
 #######################################################################
 ############################ I/O functions ############################

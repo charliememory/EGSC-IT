@@ -64,7 +64,7 @@ G_update=1
 ###############################################################
 
 
-model_dir=${checkpoint_dir}'MODEL'${model}'_FeaMask_'${data_name}'_bs'${bs}'_lr'${lr}
+model_dir=${checkpoint_dir}'MODEL0_'${data_name}'_bs'${bs}'_lr'${lr}
 python main.py --model_dir=${model_dir} --phase='train' \
                --data_parent_dir=${data_parent_dir}  --dataset_dir=${dataset_dir}  \
                --gpu=${gpu}  --batch_size=${bs}  --model=${model} \

@@ -8,8 +8,8 @@ Tensorflow implementation of ICLR 2019 paper [Exemplar Guided Unsupervised Image
 ![alt text](imgs/info_flow_in_autoencoder.png)
 
 ## Dependencies
-- python 2.7
-- tensorflow-gpu (1.4.1)
+- python 3.6.9
+- tensorflow-gpu (1.14.0)
 - numpy (1.14.0)
 - Pillow (5.0.0)
 - scikit-image (0.13.0)
@@ -32,14 +32,14 @@ You can skip this data preparation procedure if directly using the tf-record dat
 4. `./run_convert_celeba.sh` to convert the images to tf-record format. You can directly download the prepared data or download and process data from [CelebA website](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) .
 
 ## Training steps
-1. Replace the links `data`, 'logs', 'weights' with your own directories or links.
+1. Replace the links `data`, `logs`, `weights` with your own directories or links.
 2. Download [VGG19](http://homes.esat.kuleuven.be/~liqianma/ICLR19_EGSCIT/weights/vgg19.npy) into 'weights' directory.
 3. Download the tf-record training data to the `data_parent_dir` (default `./data`).
 4. Modify the `data_parent_dir`, `checkpoint_dir` and comment/uncomment the target experiment in the `run_train_feaMask.sh` and `run_train_EGSCIT.sh` scripts.
 5. Run `run_train_feaMask.sh` to pretrain the feature mask network. Then run `run_train_EGSCIT.sh`.
  
 ## Testing steps
-1. Replace the links `data`, 'logs', 'weights' with your own directories or links.
+1. Replace the links `data`, `logs`, `weights` with your own directories or links.
 2. (Optional) Download the pretrained models to the `checkpoint_dir` (default `./logs`).
 3. Download the tf-record testing data to the `data_parent_dir` (default `./data`).
 4. Modify the `data_parent_dir`, `checkpoint_dir` and comment/uncomment the target experiment in the `run_test_EGSCIT.sh` script.

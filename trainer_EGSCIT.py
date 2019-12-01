@@ -127,7 +127,6 @@ class UNIT(object):
         elif 'mnist' in self.dataset_dir.lower():
             self.dataset_tr_obj = celeba.get_split(args.phase, os.path.join(self.data_parent_dir, self.dataset_dir), 
                                                 'mnist', self.img_h_original, self.img_w_original, self.segment_class)
-
             # self.dataset_ts_obj = gta.get_split('test', os.path.join(self.data_parent_dir, self.dataset_dir.replace('train','test')),
             #                                     'gta', self.img_h_original, self.img_w_original, self.segment_class)
         # elif 'synsf' in self.dataset_dir.lower():
@@ -138,24 +137,8 @@ class UNIT(object):
         else:
             raise Exception(dataset_dir.lower() + ' is not valid')
 
-        # if 'gta' in self.dataset_dir.lower():
-        #     ## Input training data
-        #     self.img_name_A, self.img_name_B, self.real_data, self.seg_data, self.mask_A_ori, self.mask_B_ori, self.A_seg_valid, self.B_seg_valid = self._load_batch_data_tf(self.dataset_tr_obj, is_training=self.is_training)
-        #     self.real_A = self.real_data[:, :, :, :self.input_c_dim]
-        #     self.real_B = self.real_data[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
-        #     self.seg_A = self.seg_data[:, :, :, :self.input_c_dim]
-        #     self.seg_B = self.seg_data[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
-        #     ## Input test data
-        #     # self.img_name_A_ts, self.img_name_B_ts, self.real_data_ts, self.seg_data_ts, self.mask_A_ts_ori, self.mask_B_ts_ori = self._load_batch_data_tf(self.dataset_ts_obj, is_training=False) 
-        #     # self.real_A_ts = self.real_data_ts[:, :, :, :self.input_c_dim]
-        #     # self.real_B_ts = self.real_data_ts[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
-        # elif 'celeba' in self.dataset_dir.lower() or 'mnist' in self.dataset_dir.lower():
-        #     ## Input training data
-        #     self.img_name_A, self.img_name_B, self.real_data = self._load_batch_data_tf_noSeg(self.dataset_tr_obj, is_training=self.is_training)
-        #     self.real_A = self.real_data[:, :, :, :self.input_c_dim]
-        #     self.real_B = self.real_data[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
-        # else:
-        #     raise Exception(dataset_dir.lower() + ' is not valid')
+        ## Using `ignore_errors()` will drop the element that causes an error.
+        # self.dataset_tr_obj = self.dataset_tr_obj.apply(tf.data.experimental.ignore_errors())
 
         self.img_name_A, self.img_name_B, self.real_data = self._load_batch_data_tf_noSeg(self.dataset_tr_obj, is_training=self.is_training)
         self.real_A = self.real_data[:, :, :, :self.input_c_dim]
@@ -172,7 +155,6 @@ class UNIT(object):
         self.domain_B = self.real_B
         self._build_model()
         self.saver = tf.train.Saver(max_to_keep=10)
-        # self.pool = ImagePool(args.max_size)
 
     ##############################################################################
     # BEGIN of ENCODERS
@@ -242,24 +224,6 @@ class UNIT(object):
             return x
     # END of DECODERS
     ##############################################################################
-
-    # ##############################################################################
-    # # BEGIN of DISCRIMINATORS
-    # def discriminator(self, x, reuse=False, scope="discriminator"):
-    #     channel = self.ndf
-    #     with tf.variable_scope(scope, reuse=reuse):
-    #         x = ops_EGSCIT.conv(x, channel, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_0')
-
-    #         for i in range(1, self.n_dis) :
-    #             x = ops_EGSCIT.conv(x, channel*2, kernel=3, stride=2, pad=1, normal_weight_init=self.normal_weight_init, activation_fn='leaky', scope='conv_'+str(i))
-    #             channel *= 2
-
-    #         x = ops_EGSCIT.conv(x, channels=1, kernel=1, stride=1, pad=0, normal_weight_init=self.normal_weight_init, activation_fn=None, scope='dis_logit')
-    #         # x = ops_EGSCIT.conv(x, channels=1, kernel=1, stride=1, pad=0, normal_weight_init=self.normal_weight_init, activation_fn='sigmoid', scope='dis_logit')
-
-    #         return x
-    # # END of DISCRIMINATORS
-    # ##############################################################################
 
     ##############################################################################
     # BEGIN of DISCRIMINATORS
@@ -432,9 +396,9 @@ class UNIT(object):
         sv = tf.train.Supervisor(logdir=args.model_dir, is_chief=True, saver=None, summary_op=None, 
                 summary_writer=self.summary_writer, save_model_secs=0, ready_for_local_init_op=None)
         if args.phase == 'train':
-            gpu_options = tf.GPUOptions(allow_growth=True)
+            gpu_options = tf.GPUOptions(allow_growth=False)
         else:
-            gpu_options = tf.GPUOptions(allow_growth=True)
+            gpu_options = tf.GPUOptions(allow_growth=False)
         sess_config = tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)
         self.sess = sv.prepare_or_wait_for_session(config=sess_config)
         # if args.pretrained_path is not None:
@@ -461,15 +425,15 @@ class UNIT(object):
 
         if 0==args.global_step:
             if args.continue_train and self.load_last_ckpt(args.model_dir):
-                print(" [*] Load SUCCESS")
+                print(" [*] load_last_ckpt SUCCESS")
             else:
-                print(" [!] Load failed...")
+                print(" [!] load_last_ckpt Failed...")
         else:
             ## global_step is set manually
             if args.continue_train and self.load_ckpt(args.model_dir, args.global_step):
-                print(" [*] Load SUCCESS")
+                print(" [*] load_ckpt SUCCESS")
             else:
-                print(" [!] Load failed...")
+                print(" [!] load_ckpt Failed...")
 
         for epoch in range(args.epoch):
             # batch_idxs = self.sample_num // self.batch_size
@@ -518,22 +482,23 @@ class UNIT(object):
         x_bb = unprocess_image(x_bb, 127.5, 127.5)
         img_name_A = img_name_A[0]
         img_name_B = img_name_B[0]
+        pdb.set_trace()
         save_images(real_A, [self.batch_size, 1],
-                    '{}/real_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/real_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(real_B, [self.batch_size, 1],
-                    '{}/real_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/real_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(fake_A, [self.batch_size, 1],
-                    '{}/fake_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/fake_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(fake_B, [self.batch_size, 1],
-                    '{}/fake_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/fake_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(x_aa, [self.batch_size, 1],
-                    '{}/x_aa_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/x_aa_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(x_ba, [self.batch_size, 1],
-                    '{}/x_ba_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/x_ba_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(x_ab, [self.batch_size, 1],
-                    '{}/x_ab_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/x_ab_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(x_bb, [self.batch_size, 1],
-                    '{}/x_bb_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/x_bb_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
 
     def save(self, model_dir, step):
         if not os.path.exists(model_dir):
@@ -648,7 +613,6 @@ class UNIT(object):
 
         for i in range(num_style):
             for j in range(num_style):
-                # pdb.set_trace()
                 x_ba_tmp, x_ab_tmp = self.sess.run(
                     [self.x_ba, self.x_ab], \
                     feed_dict={self.is_training : True, 
@@ -661,17 +625,17 @@ class UNIT(object):
                 x_ba_tmp_img = unprocess_image(x_ba_tmp, 127.5, 127.5)
                 x_ab_tmp_img = unprocess_image(x_ab_tmp, 127.5, 127.5)
                 if save_dis_score:
-                    scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(B2A_dir, img_name_B[j].split(".")[0], img_name_A[i].split(".")[0], d_loss_a), x_ba_tmp_img[0])
-                    scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(A2B_dir, img_name_A[i].split(".")[0], img_name_B[j].split(".")[0], d_loss_b), x_ab_tmp_img[0])
+                    scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(B2A_dir, img_name_B[j].split(".")[0], img_name_A[i].decode("utf-8").split(".")[0], d_loss_a), x_ba_tmp_img[0])
+                    scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(A2B_dir, img_name_A[i].decode("utf-8").split(".")[0], img_name_B[j].split(".")[0], d_loss_b), x_ab_tmp_img[0])
                 else:
-                    scipy.misc.imsave('{}/{}_to_{}.png'.format(B2A_dir, img_name_B[j].split(".")[0], img_name_A[i].split(".")[0]), x_ba_tmp_img[0])
-                    scipy.misc.imsave('{}/{}_to_{}.png'.format(A2B_dir, img_name_A[i].split(".")[0], img_name_B[j].split(".")[0]), x_ab_tmp_img[0])
+                    scipy.misc.imsave('{}/{}_to_{}.png'.format(B2A_dir, img_name_B[j].split(".")[0], img_name_A[i].decode("utf-8").split(".")[0]), x_ba_tmp_img[0])
+                    scipy.misc.imsave('{}/{}_to_{}.png'.format(A2B_dir, img_name_A[i].decode("utf-8").split(".")[0], img_name_B[j].split(".")[0]), x_ab_tmp_img[0])
 
         real_A = unprocess_image(real_A, 127.5, 127.5)
         real_B = unprocess_image(real_B, 127.5, 127.5)
         for i in range(img_name_A.shape[0]):
-            scipy.misc.imsave('{}/{}.png'.format(A_dir, img_name_A[i].split(".")[0]), real_A[i,:,:,:])
-            scipy.misc.imsave('{}/{}.png'.format(B_dir, img_name_B[i].split(".")[0]), real_B[i,:,:,:])
+            scipy.misc.imsave('{}/{}.png'.format(A_dir, img_name_A[i].decode("utf-8").split(".")[0]), real_A[i,:,:,:])
+            scipy.misc.imsave('{}/{}.png'.format(B_dir, img_name_B[i].decode("utf-8").split(".")[0]), real_B[i,:,:,:])
 
 
     def get_test_result(self, A_dir, B_dir, A2B_dir, B2A_dir, save_dis_score=False):
@@ -685,77 +649,15 @@ class UNIT(object):
         x_ba = unprocess_image(x_ba, 127.5, 127.5)
         x_ab = unprocess_image(x_ab, 127.5, 127.5)
         for i in range(img_name_A.shape[0]):
-            scipy.misc.imsave('{}/{}.png'.format(A_dir, img_name_A[i].split(".")[0]), real_A[i,:,:,:])
-            scipy.misc.imsave('{}/{}.png'.format(B_dir, img_name_B[i].split(".")[0]), real_B[i,:,:,:])
+            scipy.misc.imsave('{}/{}.png'.format(A_dir, img_name_A[i].decode("utf-8").split(".")[0]), real_A[i,:,:,:])
+            scipy.misc.imsave('{}/{}.png'.format(B_dir, img_name_B[i].decode("utf-8").split(".")[0]), real_B[i,:,:,:])
             if save_dis_score:
-                scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(B2A_dir, img_name_B[i].split(".")[0], img_name_A[i].split(".")[0], d_loss_a), x_ba[i,:,:,:])
-                scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(A2B_dir, img_name_A[i].split(".")[0], img_name_B[i].split(".")[0], d_loss_b), x_ab[i,:,:,:])
+                scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(B2A_dir, img_name_B[i].decode("utf-8").split(".")[0], img_name_A[i].decode("utf-8").split(".")[0], d_loss_a), x_ba[i,:,:,:])
+                scipy.misc.imsave('{}/{}_to_{}_{:04f}.png'.format(A2B_dir, img_name_A[i].decode("utf-8").split(".")[0], img_name_B[i].decode("utf-8").split(".")[0], d_loss_b), x_ab[i,:,:,:])
             else:
-                scipy.misc.imsave('{}/{}_to_{}.png'.format(B2A_dir, img_name_B[i].split(".")[0], img_name_A[i].split(".")[0]), x_ba[i,:,:,:])
-                scipy.misc.imsave('{}/{}_to_{}.png'.format(A2B_dir, img_name_A[i].split(".")[0], img_name_B[i].split(".")[0]), x_ab[i,:,:,:])
+                scipy.misc.imsave('{}/{}_to_{}.png'.format(B2A_dir, img_name_B[i].decode("utf-8").split(".")[0], img_name_A[i].decode("utf-8").split(".")[0]), x_ba[i,:,:,:])
+                scipy.misc.imsave('{}/{}_to_{}.png'.format(A2B_dir, img_name_A[i].decode("utf-8").split(".")[0], img_name_B[i].decode("utf-8").split(".")[0]), x_ab[i,:,:,:])
 
-    ## TODO
-    # def test(self):
-    #     tf.global_variables_initializer().run()
-    #     test_A_files = glob('{}/{}/*.*'.format(self.data_parent_dir, self.dataset_dir + '/testA'))
-    #     test_B_files = glob('{}/{}/*.*'.format(self.data_parent_dir, self.dataset_dir + '/testB'))
-
-    #     """
-    #     testA, testB = test_data(dataset_name=self.dataset_name, size=self.img_size)
-    #     test_A_images = testA[:]
-    #     test_B_images = testB[:]
-    #     """
-
-    #     ## global_step is set manually
-    #     if args.continue_train and self.load_ckpt(args.model_dir, args.global_step):
-    #         print(" [*] Load SUCCESS")
-    #     else:
-    #         print(" [!] Load failed...")
-
-    #     self.saver = tf.train.Saver()
-    #     could_load, checkpoint_counter = self.load(self.model_dir)
-
-    #     if could_load :
-    #         print(" [*] Load SUCCESS")
-    #     else :
-    #         print(" [!] Load failed...")
-
-    #     # write html for visual comparison
-    #     index_path = os.path.join(self.test_dir, 'index.html')
-    #     index = open(index_path, 'w')
-    #     index.write("<html><body><table><tr>")
-    #     index.write("<th>name</th><th>input</th><th>output</th></tr>")
-
-    #     for sample_file  in test_A_files : # A -> B
-    #         print('Processing A image: ' + sample_file)
-    #         sample_image = np.asarray(load_test_data(sample_file))
-    #         image_path = os.path.join(self.test_dir,'{0}'.format(os.path.basename(sample_file)))
-
-    #         fake_img = self.sess.run(self.fake_B, feed_dict = {self.domain_A : sample_image, self.prob : 0.0, self.is_training : False})
-
-    #         save_images(fake_img, [1, 1], image_path)
-    #         index.write("<td>%s</td>" % os.path.basename(image_path))
-    #         index.write("<td><img src='%s' width='%d' height='%d'></td>" % (sample_file if os.path.isabs(sample_file) else (
-    #             '..' + os.path.sep + sample_file), self.img_size, self.img_size))
-    #         index.write("<td><img src='%s' width='%d' height='%d'></td>" % (image_path if os.path.isabs(image_path) else (
-    #             '..' + os.path.sep + image_path), self.img_size, self.img_size))
-    #         index.write("</tr>")
-
-    #     for sample_file  in test_B_files : # B -> A
-    #         print('Processing B image: ' + sample_file)
-    #         sample_image = np.asarray(load_test_data(sample_file))
-    #         image_path = os.path.join(self.test_dir,'{0}'.format(os.path.basename(sample_file)))
-
-    #         fake_img = self.sess.run(self.fake_A, feed_dict = {self.domain_B : sample_image, self.prob : 0.0, self.is_training : False})
-
-    #         save_images(fake_img, [1, 1], image_path)
-    #         index.write("<td>%s</td>" % os.path.basename(image_path))
-    #         index.write("<td><img src='%s' width='%d' height='%d'></td>" % (sample_file if os.path.isabs(sample_file) else (
-    #             '..' + os.path.sep + sample_file), self.img_size, self.img_size))
-    #         index.write("<td><img src='%s' width='%d' height='%d'></td>" % (image_path if os.path.isabs(image_path) else (
-    #             '..' + os.path.sep + image_path), self.img_size, self.img_size))
-    #         index.write("</tr>")
-    #     index.close()
 
     def _load_batch_data_tf(self, dataset, is_training=True):
         data_provider = slim.dataset_data_provider.DatasetDataProvider(dataset, common_queue_capacity=32, common_queue_min=8)
@@ -908,12 +810,6 @@ class UNIT_VAEGAN_recon(UNIT):
         l1_loss_a = ops_EGSCIT.L1_loss(self.x_aa, domain_A) # identity
         l1_loss_b = ops_EGSCIT.L1_loss(self.x_bb, domain_B) # identity
 
-        # Generator_A_loss = self.L1_weight * l1_loss_a + \
-        #                    self.KL_weight * enc_loss_a
-
-        # Generator_B_loss = self.L1_weight * l1_loss_b + \
-        #                    self.KL_weight * enc_loss_b
-
         Generator_A_loss = self.GAN_weight * G_ad_loss_a + \
                            self.L1_weight * l1_loss_a + \
                            self.KL_weight * enc_loss_a
@@ -981,15 +877,15 @@ class UNIT_VAEGAN_recon(UNIT):
 
         if 0==args.global_step:
             if args.continue_train and self.load_last_ckpt(args.model_dir):
-                print(" [*] Load SUCCESS")
+                print(" [*] load_last_ckpt SUCCESS")
             else:
-                print(" [!] Load failed...")
+                print(" [!] load_last_ckpt Failed...")
         else:
             ## global_step is set manually
             if args.continue_train and self.load_ckpt(args.model_dir, args.global_step):
-                print(" [*] Load SUCCESS")
+                print(" [*] load_ckpt SUCCESS")
             else:
-                print(" [!] Load failed...")
+                print(" [!] load_ckpt Failed...")
 
         for epoch in range(args.epoch):
             # batch_idxs = self.sample_num // self.batch_size
@@ -1035,13 +931,13 @@ class UNIT_VAEGAN_recon(UNIT):
         img_name_A = img_name_A[0]
         img_name_B = img_name_B[0]
         save_images(real_A, [real_A.shape[0], 1],
-                    '{}/real_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/real_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(real_B, [real_B.shape[0], 1],
-                    '{}/real_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/real_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(x_aa, [x_aa.shape[0], 1],
-                    '{}/x_aa_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/x_aa_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(x_bb, [x_bb.shape[0], 1],
-                    '{}/x_bb_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/x_bb_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
 
 
 class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(UNIT):
@@ -1061,9 +957,9 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         sv = tf.train.Supervisor(logdir=args.model_dir, is_chief=True, saver=None, summary_op=None, 
                 summary_writer=self.summary_writer, save_model_secs=0, ready_for_local_init_op=None)
         if args.phase == 'train':
-            gpu_options = tf.GPUOptions(allow_growth=True)
+            gpu_options = tf.GPUOptions(allow_growth=False)
         else:
-            gpu_options = tf.GPUOptions(allow_growth=True)
+            gpu_options = tf.GPUOptions(allow_growth=False)
         sess_config = tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)
         self.sess = sv.prepare_or_wait_for_session(config=sess_config)
 
@@ -1230,10 +1126,6 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         ## Use source domain ecnoder to extract the content feature map
         content_loss = 0.
         for i in range(num):
-        # for i in range(2,num):
-            # content_loss += ((float(i+1)/float(num))**2)*tf.reduce_mean(ops_EGSCIT.L1_loss(feaMap_list_A[i], feaMap_list_ab[i])) \
-            #             + ((float(i+1)/float(num))**2)*tf.reduce_mean(ops_EGSCIT.L1_loss(feaMap_list_B[i], feaMap_list_ba[i]))
-            # with tf.variable_scope('content_loss', reuse=tf.AUTO_REUSE):
             if self.content_loss_IN:
 
                 # feaMap_list_A[i] = tf.Print(feaMap_list_A[i], [ops_EGSCIT.self_ins_norm_2d(feaMap_list_A[i])*1e-8- ops_EGSCIT.self_ins_norm_2d(feaMap_list_ab[i])*1e-8], summarize=40, message="fea_list[%d] is:"%i)
@@ -1395,15 +1287,15 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
 
         if 0==args.global_step:
             if args.continue_train and self.load_last_ckpt(args.model_dir):
-                print(" [*] Load SUCCESS")
+                print(" [*] load_last_ckpt SUCCESS")
             else:
-                print(" [!] Load failed...")
+                print(" [!] load_last_ckpt Failed...")
         else:
             ## global_step is set manually
             if args.continue_train and self.load_ckpt(args.model_dir, args.global_step):
-                print(" [*] Load SUCCESS")
+                print(" [*] load_ckpt SUCCESS")
             else:
-                print(" [!] Load failed...")
+                print(" [!] load_ckpt Failed...")
 
         for epoch in range(args.epoch):
             # batch_idxs = self.sample_num // self.batch_size
@@ -1460,42 +1352,40 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
         img_name_A = img_name_A[0]
         img_name_B = img_name_B[0]
         save_images(real_A_img, [self.batch_size, 1],
-                    '{}/real_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/real_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(real_B_img, [self.batch_size, 1],
-                    '{}/real_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/real_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(fake_A_img, [self.batch_size, 1],
-                    '{}/fake_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/fake_A_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(fake_B_img, [self.batch_size, 1],
-                    '{}/fake_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/fake_B_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(fake_A_feaMasked_img, [self.batch_size, 1],
-                    '{}/fake_A_feaMasked_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/fake_A_feaMasked_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(fake_B_feaMasked_img, [self.batch_size, 1],
-                    '{}/fake_B_feaMasked_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/fake_B_feaMasked_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(fake_A_insNormed_img, [self.batch_size, 1],
-                    '{}/fake_A_insNormed_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/fake_A_insNormed_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(fake_B_insNormed_img, [self.batch_size, 1],
-                    '{}/fake_B_insNormed_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/fake_B_insNormed_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(x_aa_img, [self.batch_size, 1],
-                    '{}/x_aa_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/x_aa_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(x_ba_img, [self.batch_size, 1],
-                    '{}/x_ba_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
+                    '{}/x_ba_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
         save_images(x_ab_img, [self.batch_size, 1],
-                    '{}/x_ab_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.split(".")[0]))
+                    '{}/x_ab_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
         save_images(x_bb_img, [self.batch_size, 1],
-                    '{}/x_bb_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.split(".")[0]))
-## TODO: save mask ##
+                    '{}/x_bb_{:02d}_{:04d}_{}.png'.format(sample_dir, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
+
         b,h,w,c = feaMapA.shape
-        # pdb.set_trace()
         for b_idx in range(b):
             mapA = np.tile(feaMapA[b_idx,:,:,:].transpose([2,0,1]).reshape([c,h,w,1])*255., [1,1,1,3])
             mapB = np.tile(feaMapB[b_idx,:,:,:].transpose([2,0,1]).reshape([c,h,w,1])*255., [1,1,1,3])
             save_images(mapA, [16, int(mapA.shape[0]/16)],
-                        '{}/feaMapA0_{:02d}_{:02d}_{:04d}_{}.png'.format(sample_dir, b_idx, epoch, idx, img_name_A.split(".")[0]))
+                        '{}/feaMapA0_{:02d}_{:02d}_{:04d}_{}.png'.format(sample_dir, b_idx, epoch, idx, img_name_A.decode("utf-8").split(".")[0]))
             save_images(mapB, [16, int(mapB.shape[0]/16)],
-                        '{}/feaMapB0_{:02d}_{:02d}_{:04d}_{}.png'.format(sample_dir, b_idx, epoch, idx, img_name_B.split(".")[0]))
+                        '{}/feaMapB0_{:02d}_{:02d}_{:04d}_{}.png'.format(sample_dir, b_idx, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
 
         for i in range(self.batch_size):
-            # pdb.set_trace()
             fake_A_tmp, fake_B_tmp, x_ba_tmp, x_ab_tmp = self.sess.run(
                 [self.fake_A, self.fake_B, self.x_ba, self.x_ab], \
                 feed_dict={self.is_training : False, 
@@ -1507,11 +1397,11 @@ class UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContent
             x_ba_tmp_img = unprocess_image(x_ba_tmp, 127.5, 127.5)
             x_ab_tmp_img = unprocess_image(x_ab_tmp, 127.5, 127.5)
             save_images(fake_A_tmp_img, [self.batch_size, 1],
-                        '{}/fake_A_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.split(".")[0]))
+                        '{}/fake_A_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
             save_images(fake_B_tmp_img, [self.batch_size, 1],
-                        '{}/fake_B_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.split(".")[0]))
+                        '{}/fake_B_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
             save_images(x_ba_tmp_img, [self.batch_size, 1],
-                        '{}/x_ba_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.split(".")[0]))
+                        '{}/x_ba_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
             save_images(x_ab_tmp_img, [self.batch_size, 1],
-                        '{}/x_ab_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.split(".")[0]))
+                        '{}/x_ab_InsNorm{}_{:02d}_{:04d}_{}.png'.format(sample_dir, i, epoch, idx, img_name_B.decode("utf-8").split(".")[0]))
             
