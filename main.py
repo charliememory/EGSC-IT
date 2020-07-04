@@ -1,5 +1,5 @@
 import argparse
-import os
+import os, pdb
 from trainer_EGSCIT import *
 
 def str2bool(v):
@@ -106,22 +106,6 @@ import utils ## should be after tf import, since tf is used in utils
 tf.set_random_seed(19)
 tf.logging.set_verbosity(tf.logging.DEBUG)
 
-## main func for tf.app.run()
-def main(_): 
-    if args.phase == 'train':
-        gpu_options = tf.GPUOptions(allow_growth=False)
-    else:
-        gpu_options = tf.GPUOptions(allow_growth=True)
-    tfconfig = tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)
-
-    with tf.Session(config=tfconfig) as sess:
-        if 0==args.model:
-            trainer = sggan(sess, args)
-
-        if args.phase == 'train':
-            trainer.train(args)
-        else:
-            trainer.test(args)
 
 if __name__ == '__main__':
     if not os.path.exists(args.model_dir):
@@ -137,11 +121,10 @@ if __name__ == '__main__':
         trainer = UNIT_MultiEncSpecificBranchFromImg_Cycle_ChangeRes_FeaMask_VggStyleContentLoss(args)
         
     count_params()
-
+    
     trainer.init_net(args)
         
     if args.phase == 'train':
         trainer.train(args)
     else:
         trainer.test(args)
-         
